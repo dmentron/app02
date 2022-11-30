@@ -1,0 +1,196 @@
+{% extends 'bases/base.html' %}
+{% load static_tags %}
+{% block title %}{% if is_edit %}Editar{% else %}Agregar{% endif %} base de datos{% endblock %}
+
+{% block botones %}
+    <a href="javascript:{% if isEdit %}crear_base({{ idbase }}){% else %}void(0){% endif %}" class="btn btn-dark {% if isEdit %}{% else %}disabled{% endif %}{% if baseCreada %}disabled{% endif %}" type="button">
+        Crear Base <i class="fa fa-database"></i>  <img id="img-1" height="13" width="13" class="small" src="{% statics_tag 'img/loading.svg' %}">
+    </a>
+    <a href="javascript:{% if isEdit %}crear_carpetas({{ idbase }}){% else %}void(0){% endif %}" class="btn btn-dark {% if isEdit %}{% else %}disabled{% endif %}" type="button">Crear Carpetas <i class="fa fa-folder"></i></a>
+    <a href="#" class="btn btn-success {% if isEdit %}{% else %}disabled{% endif %}" type="button" data-toggle="modal" data-target=".bs-user-modal-lg">Crear Superusuario <i class="fa fa-user"></i></a>
+
+    <a href="javascript:{% if isEdit %}{% else %}void(0){% endif %}" class="btn btn-success {% if isEdit %}{% else %}disabled{% endif %}" type="button">Enviar Correo <i class="fa fa-envelope"></i></a>
+    <a href="javascript:{% if isEdit %}{% else %}void(0){% endif %}" class="btn btn-success {% if isEdit %}{% else %}disabled{% endif %}" type="button">Imprimir Contrato <i class="fa fa-print"></i></a>
+
+
+{% endblock %}
+
+{% block link_excel %}{% endblock %}
+{% block link_pdf %}{% endblock %}
+{% block link_volver %}{% url 'listado_bases' %}{% endblock %}
+{% block link_no_hidden %}fa fa-arrow-circle-left{% endblock %}
+
+{% block plain_page %}Bases <i class="fa fa-angle-right"></i> <small>{% if is_edit %}Editar{% else %}Agregar{% endif %} base de datos</small>{% endblock %}
+
+{% block acciones %}
+    <div class="x_panel">
+        <div class="x_content" >
+            <div class="" role="tabpanel" data-example-id="togglable-tabs">
+                <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
+                    <li role="presentation" class="active">
+                        <a href="#tab_content1" id="home-tab" role="tab" data-toggle="tab" aria-expanded="true">Datos base</a>
+                    </li>
+                    {% if isEdit %}
+                    <li role="presentation">
+                        <a href="#tab_content2" id="profile-tab" role="tab" data-toggle="tab" aria-expanded="true">Listado de super-usuarios</a>
+                    </li>
+                    {% endif %}
+                </ul>
+                <div id="myTabContent" class="tab-content">
+                    <div role="tabpanel" class="tab-pane fade active in" id="tab_content1" aria-labelledby="home-tab">
+                        {% include "bases/tabs/tabs_base.html" %}
+                    </div>
+                    {% if isEdit %}
+                    <div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="profile-tab">
+                        {% include "bases/tabs/tabs_usurio_base.html" %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade bs-user-modal-lg" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="titulo_modal">Agregar usuario admin</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="scrollbar">
+                        <div class="force-overflow">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" id="btn_modal">
+                        <span id="txt_loading_boton">Cargando <img src="{% statics_tag 'img/loading.svg' %}"></span>
+                        <span id="txt_closed_boton">Cerrar</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade shell-modal-migrate-lg" tabindex="-1" role="dialog" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title" id="titulo_modal_m"></h4>
+                </div>
+                <div class="modal-body">
+                    <div class="scrollbar" id="style-3" style="height: 300px;">
+                        <div class="force-overflow" id="shell_html_m">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal" id="btn_modal_migrate">
+                        <span id="txt_loading_boton_m">Cargando <img src="{% statics_tag 'img/loading.svg' %}"></span>
+                        <span id="txt_closed_boton_m">Cerrar</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript">
+    $('.select2').select2();
+    {% include 'includes/cookies_js.html' with id_elemento='home-tab' nombre_cookie='tab' valor_cookie='homeTab' %}
+    {% include 'includes/cookies_js.html' with id_elemento='profile-tab' nombre_cookie='tab' valor_cookie='profileTab' %}
+    $('#ba_fechatermino, #ba_fechaingreso').datetimepicker({
+        format: 'YYYY-MM-DD'
+    });
+    $("#img-1").hide();
+    $("#txt_loading_boton").hide();
+
+    $('#id_ba_nameemp').change(function(){
+        var nombre_emp = replaceAll(this.value, ' ', '_')
+
+        $('#id_ba_esquema').val(nombre_emp)
+        $('#id_ba_name').val(nombre_emp)
+        $('#id_ba_conexion').val(nombre_emp)
+    })
+    
+    function crear_base(base_id) {
+        $.confirm({
+            title: 'Confirmación!',
+            content: 'Esta seguro de crear la base de datos?',
+            buttons: {
+                confirmar: function () {
+                    $("#img-1").show();
+                    $.ajax({
+                        url: "{% url 'create_database' %}",
+                        type: "POST",
+                        dataType: 'json',
+                        data: {
+                            'ba_id': base_id,
+                        },
+                        success: function (data) {
+                            $("#img-1").hide();
+                            if (data.lista_err){
+                                $.alert({
+                                    title: data.lista_err[0].label,
+                                    content: data.lista_err[0].error,
+                                });
+
+                                return false;
+                            }
+                            $.alert({
+                                title: 'Éxito!',
+                                content: 'La base de datos fue creada con éxito',
+                            });
+                        }
+                    });
+                },
+                cancelar: function () {
+                    $.alert('Operación cancelada!');
+                }
+            }
+        });
+    }
+
+    function crear_carpetas(base_id) {
+        $.confirm({
+            title: 'Confirmación!',
+            content: 'Ahora se crearan las carpetas del sistema para la empresa, esta seguro de continuar?',
+            buttons: {
+                confirmar: function () {
+                    $("#img-1").show();
+                    $.ajax({
+                        url: "{% url 'armar_estructura_carpeta_empresa' %}",
+                        type: "POST",
+                        dataType: 'json',
+                        data: {
+                            'base_id': base_id,
+                        },
+                        success: function (data) {
+                            $("#img-1").hide();
+                            if (data.lista_err){
+                                $.alert({
+                                    title: data.lista_err[0].label,
+                                    content: data.lista_err[0].error,
+                                });
+
+                                return false;
+                            }
+                            $.alert({
+                                title: 'Éxito!',
+                                content: 'La base de datos fue creada con éxito',
+                            });
+                        }
+                    });
+                },
+                cancelar: function () {
+                    $.alert('Operación cancelada!');
+                }
+            }
+        });
+    }
+    </script>
+{% endblock %}

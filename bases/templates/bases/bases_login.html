@@ -1,0 +1,115 @@
+{% load static_tags %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- Meta, title, CSS, favicons, etc. -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>TITAN PRO: BASES </title>
+    <link rel="icon" type="image/jpg" href="" />
+
+    <!-- Bootstrap -->
+    <link href="{% statics_tag_gentella 'vendors/bootstrap/dist/css/bootstrap.min.css' %}" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="{% statics_tag_gentella 'vendors/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet">
+    <!-- NProgress -->
+    <link href="{% statics_tag_gentella 'vendors/nprogress/nprogress.css" rel="stylesheet' %}">
+    <!-- Animate.css -->
+    <link href="{% statics_tag_gentella 'vendors/animate.css/animate.min.css' %}" rel="stylesheet">
+    <link href="{% statics_tag_gentella 'vendors/pnotify/dist/pnotify.css' %}" rel="stylesheet">
+    <link href="{% statics_tag_gentella 'vendors/pnotify/dist/pnotify.buttons.css' %}" rel="stylesheet">
+    <link href="{% statics_tag_gentella 'vendors/pnotify/dist/pnotify.nonblock.css' %}" rel="stylesheet">
+
+
+
+    <!-- Custom Theme Style -->
+    <link href="{% statics_tag_gentella 'build/css/custom.min.css' %}" rel="stylesheet">
+
+
+            <!-- jQuery -->
+    <script src="{% statics_tag_gentella 'vendors/jquery/dist/jquery.min.js' %}"></script>
+    <script src="{% statics_tag 'js/json.js' %}"></script>
+
+  </head>
+
+  <body class="login">
+    <div>
+      <a class="hiddenanchor" id="signup"></a>
+      <a class="hiddenanchor" id="signin"></a>
+
+      <div class="login_wrapper">
+        <div class="animate form login_form">
+          <section class="login_content">
+              <form method="POST" id="frm-logeo" action="{% url 'login_user_bases' %}">
+                  {% csrf_token %}
+              <h1>Logearse</h1>
+              <div>
+                {{form.username}}
+              </div>
+              <div>
+                {{form.password}}
+              </div>
+              <div>
+                <a class="btn btn-default" href="javascript:validar_login()">Ingresar</a>
+                <a class="reset_pass" href="#">Olvidaste tu contraseña?</a>
+              </div>
+
+              <div class="clearfix"></div>
+
+              <div class="separator">
+                <p class="change_link">Empresa:
+                  <a href="#signup" class="to_register"> Nombre de empresa </a>
+                </p>
+
+                <div class="clearfix"></div>
+                <br />
+
+                <div>
+                  <h1><i class="fa fa-paw"></i> TITAN PRO</h1>
+                  <p>©2020 Todos los deechos reservados. OABN desarrollos informáticos</p>
+                </div>
+              </div>
+            </form>
+          </section>
+        </div>
+      </div>
+    </div>
+
+  </body>
+    <script src="{% statics_tag_gentella 'vendors/pnotify/dist/pnotify.js' %}"></script>
+    <script src="{% statics_tag_gentella 'vendors/pnotify/dist/pnotify.buttons.js' %}"></script>
+    <script src="{% statics_tag_gentella 'vendors/pnotify/dist/pnotify.nonblock.js' %}"></script>
+    <script>
+
+        $(document).ready(function(){
+        {% if request.session.error %}
+        new PNotify({
+                      title: 'Error!',
+                      text: '{{ request.session.mensaje }}.',
+                      type: 'error',
+                      styling: 'bootstrap3'
+                  });
+                return false;
+        {% endif %}
+      })
+
+        function validar_login() {
+
+            if($("#id_username").val().length === 0 || $("#id_password").val().length === 0){
+                new PNotify({
+                      title: 'Error!',
+                      text: 'Falta nombre de usuario o contraseña.',
+                      type: 'error',
+                      styling: 'bootstrap3'
+                  });
+                return false;
+            }else{
+                $("#frm-logeo").submit();
+            }
+
+        }
+    </script>
+</html>

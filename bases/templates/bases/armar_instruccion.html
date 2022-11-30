@@ -1,0 +1,214 @@
+{% extends 'bases/base.html' %}
+{% load static_tags %}
+{% block title %}Intrucciones GIT{% endblock %}
+
+{% block botones %}
+
+{% endblock %}
+
+{% block link_excel %}{% endblock %}
+{% block link_pdf %}{% endblock %}
+{% block link_volver %}{% endblock %}
+{% block link_no_hidden %}{% endblock %}
+
+{% block plain_page %}Git <i class="fa fa-angle-right"></i> <small>Generador de instruciones Git</small>{% endblock %}
+
+{% block acciones %}
+
+    <div class="row">
+        <div class="col-sm-1">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" class="flat" id="list_ch" name="list_ch" value="{{list_ch}}"> Borrador?
+                </label>
+            </div>
+        </div>
+
+        <div class="col-sm-1">
+            {% for p in list_pull %}
+            <div class="radio">
+                <label>
+                    <input type="radio" class="flat" id="list_pull_{{p}}" name="list_pull" value="{{p}}"> {{p}}
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+
+
+        <div class="col-sm-2">
+            <label for="dic_meses">{{anio_actual}}</label>
+            <select class="form-control" id="dic_meses" aria-label="{{anio_actual}}">
+                <option value="">Seleccione</option>
+                {% for key, value in dic_meses.items %}
+                <option value="{{key}}">{{value}}</option>
+            {% endfor %}
+        </select>
+        </div>
+
+        <div class="col-sm-2">
+            {% for key, value in dic_mod.items %}
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" class="flat" id="dic_mod_{{key}}" name="list_pull" value="{{key}}"> {{value}}
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="col-sm-1">
+            <label for="fullname">DMM</label>
+            <input type="text" class="form-control" id="dmm" placeholder="" value="">
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="container-fluid mt-5 row">
+            <div class="col-sm-3">
+                <div class="form-floating">
+                    <textarea class="form-control" placeholder="Problema" id="floatingTextarea0" style="height: 200px"></textarea>
+                </div>
+            </div>
+
+            <div class="col-sm-3">
+                <div class="form-floating">
+                    <textarea class="form-control" placeholder="Solución" id="floatingTextarea1" style="height: 200px"></textarea>
+                </div>
+            </div>
+
+            <div class="col-sm-3">
+                <div class="form-floating">
+                    <textarea class="form-control" placeholder="Ambiente" id="floatingTextarea2" style="height: 200px"></textarea>
+                </div>
+            </div>
+
+            <div class="col-sm-3">
+                <div class="form-floating">
+                    <textarea class="form-control" placeholder="Pruebas Funcionales" id="floatingTextarea3" style="height: 200px"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="container-fluid mt-5 row">
+
+        <div class="alert alert-success" id="mensaje1" role="alert">
+            <span id="branch">- </span>
+        </div>
+
+        <div class="alert alert-success" id="mensaje1" role="alert">
+            git commit -am "
+            [<span id='1'></span>]
+            [<span id='3'></span>]
+            [<span id='2'></span>]
+            [<span id='6'></span>]
+            [<span id='4'></span>]
+            <span id='5'></span>"
+        </div>
+
+        <div class="alert alert-success" id="mensaje1" role="alert">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" id="btn-modal">
+                Ver Detalle
+            </button>
+        </div>
+
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Detalle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="card">
+                        <div class="card-body">
+                            <h5>objectivo / problema</h5>
+                            <br>
+                            <div id="p1"></div>
+                            <br>
+                            <h5>SoluciÃ³n</h5>
+                            <br>
+                            <div id="p2"></div>
+                            <br>
+                            <h5>Ambiente</h5>
+                            <br>
+                            <div id="p3"></div>
+                            <br>
+                            <h5>Pruebas Funcionales</h5>
+                            <br>
+                            <div id="p4"></div>
+                            <br>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+    $(document).ready(function(){
+
+      $("#list_ch").on( 'click', function() {
+        if( $(this).is(':checked') ) {
+          $("#1").text(this.value);
+        } else {
+          $("#1").text('');
+        }
+      });
+
+      $('input[id^=list_pull_]').click(function () {
+			    $("#2").text(this.value);
+      });
+
+      $("#dic_meses").click(function () {
+			    $("#3").text(this.value+'-{{anio_actual}}');
+      });
+
+      $('input[id^=dic_mod_]').click(function () {
+        var texto = $("#4").text();
+        if( $(this).is(':checked') ) {
+          if(!texto.includes(this.value)){
+            texto+='|'+this.value;
+            $("#4").text(texto);
+          }
+        } else {
+          x_texto = texto
+          $("#4").text(x_texto.replace("|"+this.value, ""));
+        }
+      });
+
+      $("#dmm").keyup(function (){
+
+        var tipo_dato = $('input[name=list_pull]:checked').val();
+        if(tipo_dato === 'FIX')
+          var tipo_dato = 'hotfix';
+
+        var texto = "git branch "+tipo_dato+"/DMM-"+this.value;
+        texto+=" -- git checkout "+tipo_dato+"/DMM-"+this.value;
+
+        $("#branch").text(texto);
+        $("#6").text("DMM-"+this.value);
+      });
+
+      $("#floatingTextarea1").keyup(function (){
+        $("#5").text(this.value);
+      });
+
+      $("#btn-modal").click(function(){
+        $("#p1").text($("#floatingTextarea0").val());
+        $("#p2").text($("#floatingTextarea1").val());
+        $("#p3").text($("#floatingTextarea2").val());
+        $("#p4").text($("#floatingTextarea3").val());
+      });
+    })
+  </script>
+{% endblock %}

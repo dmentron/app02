@@ -1,0 +1,9 @@
+    $("#{{id_elemento}}").click(function(){
+        Cookies.set('{{nombre_cookie}}', '{{valor_cookie}}');
+    });
+
+    if(Cookies.get('{{nombre_cookie}}') == '{{valor_cookie}}'){
+        setTimeout(function() {
+            $("#{{id_elemento}}").get(0).click();
+        },1);
+    }

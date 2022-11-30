@@ -1,0 +1,78 @@
+{% extends 'bases/base.html' %}
+{% load static_tags %}
+{% block title %}WebScraping{% endblock %}
+
+{% block botones %}
+
+{% endblock %}
+
+{% block link_excel %}{% endblock %}
+{% block link_pdf %}{% endblock %}
+{% block link_volver %}{% endblock %}
+{% block link_no_hidden %}{% endblock %}
+
+{% block plain_page %}Web <i class="fa fa-angle-right"></i> <small>Generador de WebScraping</small>{% endblock %}
+
+{% block acciones %}
+
+    <form action="." method="post" id="frm-page">
+    {% csrf_token %}
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="input-group p-3">
+                    <input type="text" class="form-control" name="x_page" id="x_page" autocomplete="off">
+                    <span class="input-group-btn">
+                        <button type="button" id="btn-page" class="btn btn-primary">Robar página! <img id="img-1" height="13" width="13" class="small" src="{% statics_tag 'img/loading.svg' %}"></button>
+                    </span>
+                </div>
+            </div>
+
+        </div>
+    </form>
+
+
+    <div class="x_content">
+        <div class="bs-example" data-example-id="simple-jumbotron">
+            <div class="jumbotron" style="background-color: #0a0c14; color: #FFFFFF;">
+                scraping@<span id="x_host_name">hostname#:_</span>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+$(document).ready(function (){
+    $("#img-1").hide();
+
+    $("#btn-page").click(function (){
+        if ($("#x_page").val().length === 0){
+            $.alert({
+                title: 'Error',
+                content: 'Debes agregar una pagina',
+            });
+            return false;
+        }else{
+            $("#img-1").show();
+            $.ajax({
+                url: "{% url 'armar_page' %}",
+                type: "POST",
+                dataType: 'json',
+                data: $("#frm-page").serialize(),
+                success: function (data) {
+                    $("#img-1").hide();
+                    $("#x_host_name").text(data.host_name);
+                }
+            });
+        }
+
+    })
+
+});
+</script>
+{% endblock %}
